@@ -120,7 +120,7 @@ const Hero = () => {
             <span className="relative inline-flex size-2 rounded-full bg-green-600"></span>
           </div>
           <p className="text-sm text-black/60">
-            Join 12,450+ brands growing with us
+            12,450+ users are building smarter resumes with us
           </p>
         </div>
 
