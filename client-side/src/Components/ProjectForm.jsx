@@ -75,9 +75,7 @@ const ProjectForm = ({ data, onChange }) => {
                   placeholder="Project Name"
                   className="px-3 py-2 text-sm rounded-lg"
                   value={project.name || ""}
-                  onChange={(e) =>
-                    updateEducation(index, "name", e.target.value)
-                  }
+                  onChange={(e) => updateProject(index, "name", e.target.value)}
                 />
 
                 <input
