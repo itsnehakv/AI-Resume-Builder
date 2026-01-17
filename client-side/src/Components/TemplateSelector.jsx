@@ -48,7 +48,7 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
               className={`relative p-3 border rounded-md cursor-pointer
                 transition-all ${
                   selectedTemplate === template.id
-                    ? "border-blue-400 bg-blue-100"
+                    ? "border-indigo-900 bg-violet-100"
                     : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                 }`}
               onClick={() => {
@@ -65,7 +65,7 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
               )}
               <div className="space-y-1">
                 <h4 className="font-medium text-gray-800">{template.name}</h4>
-                <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-gray-600 italic">
+                <div className="mt-2 p-2 bg-violet-50 rounded text-xs text-gray-600 italic">
                   {template.preview}
                 </div>
               </div>
