@@ -11,7 +11,7 @@ const ColorPicker = ({ selectedColor, onChange }) => {
     { name: "Plum", value: "#805AD5" },
     { name: "Teal", value: "#319795" },
     { name: "Magenta", value: "#D53F8C" },
-    { name: "Yellow-Green", value: "#C6F6D5" },
+    { name: "Soft Forest Green", value: "#4CAF50" },
     { name: "Charcoal", value: "#2D3748" },
   ];
 
