@@ -13,11 +13,11 @@ import { dummyResumeData } from "../assets/assets";
 
 const Dashboard = () => {
   const colors = [
-    "#6A4C93", // Royal Purple — blends but distinct from background
-    "#3FA7A5", // Teal / Aqua — complements green accents
-    "#2E8B57", // Vibrant Magenta — pops against violet
-    "#4B7C59", // Forest Green — ties into green accents naturally
-    "#5C6BC0", // Indigo Blue — cool, high contrast with violet background
+    "#6A4C93", // Royal Purple
+    "#3FA7A5", // Teal / Aqua
+    "#2E8B57", // Vibrant Magenta
+    "#4B7C59", // Forest Green
+    "#5C6BC0", // Indigo Blue
   ];
   const [allResumes, setAllResumes] = useState([]);
   const [showCreateResume, setShowCreateResume] = useState(false);
