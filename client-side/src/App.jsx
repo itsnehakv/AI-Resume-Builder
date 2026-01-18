@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Layout from "./pages/Layout";
@@ -6,8 +6,39 @@ import Dashboard from "./pages/Dashboard.jsx";
 import ResumeBuilder from "./pages/ResumeBuilder";
 import Preview from "./pages/Preview";
 import Login from "./pages/Login";
+import { useDispatch } from "react-redux";
+import api from "./configs/api.js";
+import { login, setLoading } from "./App/features/authSlice.js";
 
 const App = () => {
+  const dispatch = useDispatch();
+
+  const getUserData = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      if (token) {
+        const { data } = await api.get("/api/users/data", {
+          headers: { Authorization: token },
+        });
+
+        if (data.user) {
+          dispatch(login({ token, user: data.user }));
+        }
+        dispatch(setLoading(false));
+      } else {
+        dispatch(setLoading(false));
+      }
+    } catch (error) {
+      dispatch(setLoading(false));
+      console.log(error.message);
+    }
+  };
+
+  // ^ Calling getUserData when component gets loaded
+  useEffect(() => {
+    getUserData();
+  }, []);
+
   return (
     <>
       <Routes>

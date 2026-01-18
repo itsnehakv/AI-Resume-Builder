@@ -1,7 +1,10 @@
 import { Lock, Mail, User } from "lucide-react";
 import React from "react";
+import api from "../configs/api";
 
 const Login = () => {
+
+  const dispatch = 
   const query = new URLSearchParams(window.location.search);
   const urlState = query.get("state");
   const [state, setState] = React.useState(urlState || "login");
@@ -14,6 +17,11 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // API call for user login/register
+    try {
+      const { data } = await api.post(`/api/users/${state}`, formData);
+      dispa
+    } catch (error) {}
   };
 
   const handleChange = (e) => {
