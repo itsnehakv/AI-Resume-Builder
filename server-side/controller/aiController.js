@@ -1,7 +1,7 @@
 //^ Controllers for AI
 
 import { parse } from "dotenv";
-import { response } from "express";
+// import { response } from "express";
 import Resume from "../models/Resume.js";
 import ai from "../configs/ai.js";
 
