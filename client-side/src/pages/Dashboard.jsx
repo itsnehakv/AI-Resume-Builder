@@ -8,8 +8,13 @@ import {
   UploadCloudIcon,
   XIcon,
   UploadCloud,
+  LoaderCircleIcon,
 } from "lucide-react";
 import { dummyResumeData } from "../assets/assets";
+import { useSelector } from "react-redux";
+import api from "../configs/api";
+import toast from "react-hot-toast";
+import pdfToText from "react-pdftotext";
 
 const Dashboard = () => {
   const colors = [
@@ -22,53 +27,138 @@ const Dashboard = () => {
   const [allResumes, setAllResumes] = useState([]);
   const [showCreateResume, setShowCreateResume] = useState(false);
   const [showUploadResume, setShowUploadResume] = useState(false);
+
   const [title, setTitle] = useState("");
   const [resume, setResume] = useState(null);
+
   const [editResumeId, setEditResumeId] = useState("");
+  const [hoverIndex, setHoverIndex] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { user, token } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
 
-  const [hoverIndex, setHoverIndex] = useState(null);
-  const createResume = async (event) => {
-    event.preventDefault();
-    setShowCreateResume(false);
-    navigate(`/app/builder/resume123`);
+  // -----------------------------------------------------------------------------------------------------
+  // * LOAD ALL RESUMES ON DASHBOARD
+  const loadAllResumes = async () => {
+    try {
+      const { data } = await api.get("/api/users/resumes", {
+        headers: {
+          Authorization: token,
+        },
+      });
+      setAllResumes(data.resumes);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message);
+    }
   };
+
+  // -----------------------------------------------------------------------------------------------------
+  // * CREATE RESUME
+  const createResume = async (event) => {
+    try {
+      event.preventDefault();
+      const { data } = await api.post(
+        "/api/resumes/create",
+        { title },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      setAllResumes([...allResumes, data.resume]);
+      setTitle("");
+      setShowCreateResume(false);
+      navigate(`/app/builder/${data.resume._id}`);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message);
+    }
+  };
+
+  // -----------------------------------------------------------------------------------------------------
+  // * UPLOAD RESUME
 
   const uploadResume = async (event) => {
     event.preventDefault();
-    setShowUploadResume(false);
-    navigate(`/app/builder/resume123`);
+    setIsLoading(true);
+    try {
+      const resumeText = await pdfToText(resume);
+      const { data } = await api.post(
+        "/api/ai/upload-resume",
+        { title, resumeText },
+        { headers: { Authorization: token } }
+      );
+
+      // FIX: Add the new resume to your state before navigating
+      if (data.resume) {
+        setAllResumes((prev) => [...prev, data.resume]);
+      }
+
+      setTitle("");
+      setResume(null);
+      setShowUploadResume(false);
+      toast.success("Resume uploaded and parsed successfully!");
+      navigate(`/app/builder/${data.resumeId}`);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message);
+    }
+    setIsLoading(false);
   };
 
   const editTitle = async (event) => {
-    event.preventDefault();
-    setAllResumes((prev) =>
-      prev.map((resume) =>
-        resume._id === editResumeId ? { ...resume, title } : resume
-      )
-    );
-    setEditResumeId("");
-    setTitle("");
-  };
+    try {
+      event.preventDefault();
+      const { data } = await api.put(
+        `/api/resumes/update`,
+        { resumeId: editResumeId, resumeData: { title } },
+        {
+          headers: { Authorization: token },
+        }
+      );
 
-  const deleteResume = async (resumeId) => {
-    const confirm = window.confirm(
-      "Are you sure you want to delete this resume?"
-    );
-    if (confirm) {
-      setAllResumes((prev) => prev.filter((resume) => resume._id !== resumeId));
+      setAllResumes(
+        allResumes.map((resume) =>
+          resume._id === editResumeId ? { ...resume, title } : resume
+        )
+      );
+      setTitle("");
+      setEditResumeId("");
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message);
     }
   };
+
+  // -----------------------------------------------------------------------------------------------------
+  // * DELETE RESUME
+  const deleteResume = async (resumeId) => {
+    try {
+      const confirm = window.confirm(
+        "Are you sure you want to delete this resume?"
+      );
+      if (confirm) {
+        const { data } = await api.delete(`/api/resumes/delete/${resumeId}`, {
+          headers: { Authorization: token },
+        });
+        setAllResumes(allResumes.filter((resume) => resume._id !== resumeId));
+        toast.success(data.message);
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message);
+    }
+  };
+
   useEffect(() => {
-    setAllResumes(dummyResumeData);
+    loadAllResumes();
   }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <p className="text-2xl font-medium mb-6 bg-gradient-to-r from-slate-600 to-slate-700 bg-clip-text text-transparent sm:hidden">
-        Welcome, John Doe
-      </p>
+      {/* <p className="text-2xl font-medium mb-6 bg-gradient-to-r from-slate-600 to-slate-700 bg-clip-text text-transparent sm:hidden">
+      Welcome, John Doe
+    </p> */}
 
       {/* Top buttons */}
       <div className="flex flex-wrap gap-4 mb-6 justify-center">
@@ -239,8 +329,14 @@ hover: text-slate-600 cursor-pointer transition-colors"
                   onChange={(e) => setResume(e.target.files[0])}
                 />
               </div>
-              <button className="w-full py-2 bg-purple-600 text-white rounded hover:bg-fuchsia-700 transition-colors">
-                Upload Resume
+              <button
+                className="w-full py-2 bg-purple-600 text-white rounded hover:bg-fuchsia-700 transition-colors flex items-center justify-center gap-2"
+                disabled={isLoading}
+              >
+                {isLoading && (
+                  <LoaderCircleIcon className="animate-spin size-4 text-white " />
+                )}
+                {isLoading ? "Uploading.." : "Upload Resume"}
               </button>
               <XIcon
                 className="absolute top-4 right-4 text-slate-400
@@ -290,5 +386,4 @@ hover: text-slate-600 cursor-pointer transition-colors"
     </div>
   );
 };
-
 export default Dashboard;
