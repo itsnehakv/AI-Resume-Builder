@@ -1,10 +1,12 @@
 import { Lock, Mail, User } from "lucide-react";
 import React from "react";
 import api from "../configs/api";
+import { useDispatch } from "react-redux";
+import { login } from "../App/features/authSlice";
+import toast from "react-hot-toast";
 
 const Login = () => {
-
-  const dispatch = 
+  const dispatch = useDispatch();
   const query = new URLSearchParams(window.location.search);
   const urlState = query.get("state");
   const [state, setState] = React.useState(urlState || "login");
@@ -20,8 +22,12 @@ const Login = () => {
     // API call for user login/register
     try {
       const { data } = await api.post(`/api/users/${state}`, formData);
-      dispa
-    } catch (error) {}
+      dispatch(login(data));
+      localStorage.setItem("token", data.token);
+      toast.success(data.message || "User Successfully Created!");
+    } catch (error) {
+      toast(error?.response?.data?.message || error.message);
+    }
   };
 
   const handleChange = (e) => {
