@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { dummyResumeData } from "../assets/assets";
 import { Link, useParams } from "react-router-dom";
 import { PersonalInfoForm } from "../Components/PersonalInfoForm";
 import ResumePreview from "../Components/ResumePreview";
@@ -27,6 +26,7 @@ import {
 import SkillsForm from "../Components/SkillsForm";
 import { useSelector } from "react-redux";
 import api from "../configs/api";
+import toast from "react-hot-toast";
 
 const ResumeBuilder = () => {
   const { resumeId } = useParams(); //Obtained from parameter of URL
@@ -39,7 +39,7 @@ const ResumeBuilder = () => {
     professional_summary: "",
     experience: [],
     education: [],
-    projects: [],
+    project: [],
     skills: [],
     template: "classic",
     accent_color: "#5EEAD4",
@@ -78,15 +78,31 @@ const ResumeBuilder = () => {
     loadExistingResume();
   }, [resumeId]);
 
-  //Fucntion to change 'public'--> Changes to opposite of current states
+  //-------------------------------------------------------------------------------------------
+  //* Function to change 'public'--> Changes to opposite of current states
   const changeResumeVisibility = async () => {
-    setResumeData({ ...resumeData, public: !resumeData.public });
+    try {
+      const formData = new FormData();
+      formData.append("resumeId", resumeId);
+      formData.append(
+        "resumeData",
+        JSON.stringify({ public: !resumeData.public }) // & FormData is like an envelope to send data ; it accepts only strings
+      );
+      const { data } = await api.put(`api/resumes/update`, formData, {
+        headers: { Authorization: token },
+      });
+      setResumeData({ ...resumeData, public: !resumeData.public });
+      toast.success(data.message);
+    } catch (error) {
+      console.error("Error saving resume:", error);
+    }
   };
 
-  // Function to share resume when public is true
+  //-------------------------------------------------------------------------------------------
+  // * Function to share resume when public is true
 
-  // - navigator is a global object provided by the browser (part of the Web APIs).
-  //- > navigator.share < checks if the browser supports the Web Share API
+  // & - navigator is a global object provided by the browser (part of the Web APIs).
+  //& - navigator.share checks if the browser supports the Web Share API
   const handleShare = () => {
     const frontendUrl = window.location.href.split("/app/")[0];
     const resumeUrl = frontendUrl + "/view/" + resumeId;
@@ -98,9 +114,40 @@ const ResumeBuilder = () => {
     }
   };
 
-  // Function to download resume
+  //-------------------------------------------------------------------------------------------
+  // * Function to download resume
   const downloadResume = () => {
     window.print();
+  };
+
+  //-------------------------------------------------------------------------------------------
+  // * Function to SAVE resume changes
+  const saveResume = async () => {
+    try {
+      let updatedResumeData = structuredClone(resumeData); // & structuredClone goes through your entire object, no matter how nested it is ; creates a brand-new version of every single part.
+
+      // * Remove image from updatedResumeData to send resume data and image separately to formData
+      if (typeof resumeData.personal_info.image === "object") {
+        delete updatedResumeData.personal_info.image;
+      }
+
+      const formData = new FormData();
+      formData.append("resumeId", resumeId);
+      formData.append("resumeData", JSON.stringify(updatedResumeData));
+      formData.append("removeBackground", removeBackground ? "true" : "false"); // & IF removeBackground is true , append "true"
+
+      typeof resumeData.personal_info.image === "object" &&
+        formData.append("image", resumeData.personal_info.image);
+
+      const { data } = await api.put(`api/resumes/update`, formData, {
+        headers: { Authorization: token },
+      });
+
+      setResumeData(data.resume);
+      toast.success("Saved Successfully!");
+    } catch (error) {
+      console.error("Error saving resume:", error);
+    }
   };
 
   return (
@@ -248,11 +295,11 @@ const ResumeBuilder = () => {
                 {/* Projects */}
                 {activeSection.id === "projects" && (
                   <ProjectForm
-                    data={resumeData.projects || []}
+                    data={resumeData.project || []}
                     onChange={(data) =>
                       setResumeData((prev) => ({
                         ...prev,
-                        projects: data,
+                        project: data,
                       }))
                     }
                     setResumeData={setResumeData}
@@ -274,6 +321,9 @@ const ResumeBuilder = () => {
                 )}
               </div>
               <button
+                onClick={() => {
+                  toast.promise(saveResume, { loading: "Saving..." });
+                }}
                 className="bg-gradient-to-br from-green-100 to-green-200 ring-green-300 text-green-600 ring hover:ring-green-400 
           transition-all rounded-md px-6 py-2 mt-6 text-sm"
               >
