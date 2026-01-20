@@ -6,6 +6,13 @@
 import Resume from "../models/Resume.js";
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
+
+import jwt from "jsonwebtoken";
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
+};
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -29,8 +36,8 @@ export const registerUser = async (req, res) => {
       password: hashedPassword,
     });
 
-    const token = generateToken(newUser, _id);
-    newUser.password = "undefined";
+    const token = generateToken(newUser._id);
+    newUser.password = undefined;
 
     return res
       .status(201) // 201 Created when you create a new resource
@@ -58,7 +65,7 @@ export const loginUser = async (req, res) => {
     //Return success message
     const token = generateToken(user._id);
     user.password = "undefined";
-    return res.status(200).json({ message: "Login successful!.", token, user }); //200 for successful operations that retrieve or update existing resources
+    return res.status(200).json({ message: "Login successful!", token, user }); //200 for successful operations that retrieve or update existing resources
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }
