@@ -25,9 +25,12 @@ import {
   DownloadIcon,
 } from "lucide-react";
 import SkillsForm from "../Components/SkillsForm";
+import { useSelector } from "react-redux";
+import api from "../configs/api";
 
 const ResumeBuilder = () => {
   const { resumeId } = useParams(); //Obtained from parameter of URL
+  const { token } = useSelector((state) => state.auth);
 
   const [resumeData, setResumeData] = React.useState({
     _id: "",
@@ -44,10 +47,16 @@ const ResumeBuilder = () => {
   });
 
   const loadExistingResume = async () => {
-    const resume = dummyResumeData.find((resume) => resume._id === resumeId);
-    if (resume) {
-      setResumeData(resume);
-      document.title = resume.title;
+    try {
+      const { data } = await api.get(`api/resumes/get/${resumeId}`, {
+        headers: { Authorization: token },
+      });
+      if (data.resume) {
+        setResumeData(data.resume);
+        document.title = data.resume.title;
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
