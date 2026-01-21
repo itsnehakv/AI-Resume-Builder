@@ -340,12 +340,7 @@ hover: text-slate-600 cursor-pointer transition-colors"
                 />
               </div>
               <button
-                className={`w-full py-2 bg-purple-600 text-white rounded hover:bg-fuchsia-700 transition-colors flex items-center justify-center gap-2
-                ${
-                  isLoading
-                    ? "bg-purple-400 cursor-not-allowed"
-                    : "bg-purple-600 hover:bg-fuchsia-700"
-                }`}
+                className={`w-full py-2 bg-purple-600 text-white rounded hover:bg-fuchsia-700 transition-colors flex items-center justify-center gap-2`}
                 disabled={isLoading}
               >
                 {isLoading && (
