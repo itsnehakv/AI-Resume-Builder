@@ -97,9 +97,20 @@ export const PersonalInfoForm = ({
             type="file"
             accept="image/jpeg , image/png"
             className="hidden"
-            onChange={(e) => handleChange("image", e.target.files[0])}
+            onChange={(e) => {
+              const file = e.target.files[0];
+              // * w/o this IF, the alert shows up as "Failed to execute 'createObjectURL' on 'URL': Overload resolution failed."
+              if (file) {
+                handleChange("image", file);
+              }
+            }}
           />
         </label>
+        {!data.image && (
+          <p className="text-amber-600 text-[10px] mt-1 italic">
+            * No image selected.
+          </p>
+        )}
         {data.image && typeof data.image === "object" && (
           <div className="flex flex-col gap-1 pl-4 text-sm">
             <p>Remove Background</p>
@@ -109,18 +120,15 @@ export const PersonalInfoForm = ({
             >
               <input
                 type="checkbox"
-                className="sr-only peer"
+                className="sr-only peer" //& Screen Reader only ; Hides the default checkbox visually but it retains functionality and keeps it accessible.
                 onChange={() => setRemoveBackground((prev) => !prev)}
                 checked={removeBackground}
               />
-              <div className="w-9 h-5 bg-slate-300 rounded-full peer peer-checked:bg-green-600 transition-colors duration-200">
-                <span
-                  className="dot absolute left-1 top-1 w-3 h-3 bg-white rounded-full
-                 transition-transform duration-200 ease-in-out peer-checked:translate-x-4"
-                ></span>
-              </div>
+              <div className="w-9 h-5 bg-slate-300 rounded-full peer peer-checked:bg-green-600 transition-colors duration-200"></div>
+              <span className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-4"></span>
             </label>
           </div>
+          //& div gives the pill shape, span gives the circle
         )}
       </div>
 
