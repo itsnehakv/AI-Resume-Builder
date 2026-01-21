@@ -10,11 +10,15 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
+const corsOptions = {
+  origin: process.env.VERCEL_URL,
+  optionsSuccessStatus: 200,
+};
 // Database Connection
 await connectDB();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.get("/", (req, res) => res.send("Serve is Live"));
 app.use("/api/users", userRouter);
