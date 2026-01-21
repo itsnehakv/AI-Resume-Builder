@@ -94,9 +94,15 @@ export const getUserById = async (req, res) => {
 //GET: /api/users/resumes
 
 export const getUserResumes = async (req, res) => {
-  console.log("DEBUG: Fetching resumes for User ID:", req.userId);
   try {
     const userId = req.userId;
+    if (!userId) {
+      console.log("CRITICAL ERROR: No userId found in request!");
+      return res.status(401).json({ message: "User identity lost" });
+    }
+
+    // 2. Log the query to the terminal
+    console.log(`Querying Atlas for resumes belonging to: ${userId}`);
 
     //Return User Resumes by using the userId passed by request
     const resumes = await Resume.find({ userId });
