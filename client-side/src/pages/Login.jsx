@@ -90,7 +90,7 @@ const Login = () => {
         </div>
         <button
           type="submit"
-          className="mt-2 w-full h-11 rounded-full text-white bg-gradient-to-r from-violet-600 to-fuchsia-800 hover:from-purple-300 hover:to-emerald-300 transition-all active:scale-95"
+          className="mt-2 w-full h-11 rounded-full text-white bg-gradient-to-r from-violet-600 to-fuchsia-800 hover:from-sky-400 hover:to-purple-300 transition-all active:scale-95"
         >
           {state === "login" ? "Login" : "Sign up"}
         </button>
