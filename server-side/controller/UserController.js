@@ -94,6 +94,7 @@ export const getUserById = async (req, res) => {
 //GET: /api/users/resumes
 
 export const getUserResumes = async (req, res) => {
+  console.log("DEBUG: Fetching resumes for User ID:", req.userId);
   try {
     const userId = req.userId;
 
