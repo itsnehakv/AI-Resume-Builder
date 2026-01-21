@@ -1,13 +1,20 @@
-import { Briefcase, Sparkle, Trash2, Plus } from "lucide-react";
+import { Briefcase, Sparkle, Trash2, Plus, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import api from "../configs/api.js";
+import toast from "react-hot-toast";
 import React from "react";
 
 const ExperienceForm = ({ data, onChange }) => {
+  const { token } = useSelector((state) => state.auth);
+  const [generatingIndex, setGeneratingIndex] = useState(-1);
+
   const addExperience = () => {
     const newExperience = {
       company: "",
       position: "",
-      startDate: "",
-      endDate: "",
+      start_date: "",
+      end_date: "",
       description: "",
       is_current: false,
     };
@@ -25,6 +32,25 @@ const ExperienceForm = ({ data, onChange }) => {
     onChange(updated);
   };
 
+  const generateDescription = async (index) => {
+    setGeneratingIndex(index);
+    const experience = data[index];
+    const prompt = `Generate a detailed and impactful job description for this resume ${experience.description}. For the position of 
+    ${experience.position} at ${experience.company}. Highlight key responsibilities, achievements, and skills relevant to the role. Make it concise and tailored for a resume. Limit the description to 4-5 sentences.`;
+
+    try {
+      const { data } = await api.post(
+        `/api/ai/enhance-job-desc`,
+        { userContent: prompt },
+        { headers: { Authorization: token } }
+      );
+      updateExperience(index, "description", data.enhancedContent);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setGeneratingIndex(-1);
+    }
+  };
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -96,7 +122,7 @@ const ExperienceForm = ({ data, onChange }) => {
                 <input
                   type="month"
                   className="px-3 py-2 text-sm rounded-lg"
-                  value={experience.startDate || ""}
+                  value={experience.start_date || ""}
                   onChange={(e) =>
                     updateExperience(index, "start_date", e.target.value)
                   }
@@ -106,7 +132,7 @@ const ExperienceForm = ({ data, onChange }) => {
                   type="month"
                   className="px-3 py-2 text-sm rounded-lg disabled:bg-gray-100"
                   disabled={experience.is_current}
-                  value={experience.endDate || ""}
+                  value={experience.end_date || ""}
                   onChange={(e) =>
                     updateExperience(index, "end_date", e.target.value)
                   }
@@ -135,10 +161,20 @@ const ExperienceForm = ({ data, onChange }) => {
                 <div className="flex items-center justify-between">
                   <label>Job Description</label>
                   <button
+                    onClick={() => generateDescription(index)}
+                    disabled={
+                      generatingIndex === index ||
+                      !experience.position ||
+                      !experience.company
+                    }
                     className="flex items-center gap-1 px-2 py-1 text-xs bg-purple-100 text-purple-700 
                     rounded hover:bg-purple-200 transition-colors disabled:opacity-50"
                   >
-                    <Sparkle className="w-3 h-3" />
+                    {generatingIndex === index ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <Sparkle className="w-3 h-3" />
+                    )}
                     Enhance with AI
                   </button>
                 </div>
