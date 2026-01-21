@@ -33,10 +33,18 @@ export const deleteResume = async (req, res) => {
     const userId = req.userId;
     const { resumeId } = req.params;
 
-    await Resume.findOneAndDelete({ userId, _id: resumeId });
+    const deletedResume = await Resume.findOneAndDelete({
+      userId,
+      _id: resumeId,
+    });
 
+    if (!deletedResume) {
+      return res
+        .status(404)
+        .json({ message: "Resume not found or unauthorized" });
+    }
     //Return Success Message
-    return res.status(201).json({ message: "Resume Deleted Successfully" });
+    return res.status(200).json({ message: "Resume Deleted Successfully" });
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }
@@ -76,7 +84,7 @@ export const getResumeByID = async (req, res) => {
 export const getPublicResumeByID = async (req, res) => {
   try {
     const { resumeId } = req.params;
-    const resume = await resume.findOne({ public: true, _id: resumeId });
+    const resume = await Resume.findOne({ public: true, _id: resumeId });
 
     if (!resume) {
       return res.status(404).json({ message: "Resume Not Found" });
@@ -95,33 +103,44 @@ export const updateResume = async (req, res) => {
   try {
     const userId = req.userId;
     const { resumeId, resumeData, removeBackground } = req.body;
-    const image = req.file; //the users photo used in resume ; file property added by multer.js
+    const image = req.file;
 
-    let resumeDataCopy = JSON.parse(resumeData);
+    let resumeDataCopy;
+    if (typeof resumeData === "string") {
+      resumeDataCopy = JSON.parse(resumeData);
+    } else {
+      resumeDataCopy = structuredClone(resumeData);
+    }
 
     if (image) {
       const imageBufferData = fs.createReadStream(image.path);
 
       const response = await imagekit.files.upload({
-        file: imageBufferData, //Buffer Image
-        fileName: "resume.jpg",
+        file: imageBufferData,
+        fileName: `resume_${Date.now()}.jpg`,
         folder: "user-resumes",
-        transformation: {
-          pre:
-            "w-300,h-300 fo-face, z-0.75" +
-            (removeBackground ? ",e.bgremove" : ""), //dimension of image ; focus on face ; zoom out by .75 ; if removeBackgroun is true -> remove bg ; provided by imagekit
-        },
       });
 
-      resumeDataCopy.personal_info.image = response.url;
+      // & Forces Auto-Focus
+      const baseUrl = process.env.IMAGEKIT_BASEURL; //& ImageKit ID ; It is unique to your account
+      const transformation = `tr:w-300,h-300,fo-face,z-0.75${
+        removeBackground === "true" || removeBackground === true
+          ? ",e-removedotbg" //& why ",e-removedotbg  "? bcs the string looks like this:- tr:w-300,h-300,fo-face,e-bg_remove. Hence, the comma
+          : ""
+      }`;
+
+      resumeDataCopy.personal_info.image = `${baseUrl}/${transformation}${response.filePath}`; //& "response.filePath" is a specific string returned by the server after a successful upload. It represents the unique location of your file within your ImageKit storage.
     }
-    const resume = await Resume.findByIdAndUpdate(
+
+    const resume = await Resume.findOneAndUpdate(
       { userId, _id: resumeId },
       resumeDataCopy,
-      { new: true } //{new:true} returns the new updated data
+      { new: true }
     );
+
     return res.status(200).json({ message: "Saved Successfully!", resume });
   } catch (error) {
+    console.error("Update Error:", error);
     return res.status(400).json({ message: error.message });
   }
 };
