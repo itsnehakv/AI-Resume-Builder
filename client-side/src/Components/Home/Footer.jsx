@@ -10,18 +10,6 @@ const Footer = () => {
             Trusted by thousands of job seekers, our AI-powered resume builder
             helps you create professional, interview-ready resumes in minutes.
           </p>
-          <div className="flex items-center gap-2 mt-4">
-            <img
-              src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/refs/heads/main/assets/appDownload/googlePlayBtnBlack.svg"
-              alt="google play"
-              className="h-10 w-auto border border-white rounded"
-            />
-            <img
-              src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/refs/heads/main/assets/appDownload/appleStoreBtnBlack.svg"
-              alt="app store"
-              className="h-10 w-auto border border-white rounded"
-            />
-          </div>
         </div>
         <div className="flex-1 flex items-start md:justify-end gap-20 md:gap-40">
           <div>
@@ -59,8 +47,7 @@ const Footer = () => {
         </div>
       </div>
       <p className="pt-4 text-center text-sm pb-5">
-        Copyright {new Date().getFullYear()} ©{" "}
-        <a href="https://prebuiltui.com">Resume Builder</a>.
+        Copyright {new Date().getFullYear()} © <a href="">Resume Builder</a>.
       </p>
     </footer>
   );
