@@ -1,7 +1,37 @@
-import { Sparkle } from "lucide-react";
-import React from "react";
+import { Loader2, Sparkle } from "lucide-react";
+import { useSelector } from "react-redux";
+import { toast } from "react-hot-toast";
+import { useState } from "react";
+import api from "../configs/api.js";
 
 const ProfessionalSummaryForm = ({ data, onChange, setResumeData }) => {
+  const { token } = useSelector((state) => state.auth);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const generateSummary = async () => {
+    try {
+      setIsGenerating(true);
+      const prompt = `Generate a professional summary for a resume based on the following details: ${JSON.stringify(
+        data
+      )}. The summary should be concise, impactful, and tailored for a resume. Limit the summary to 3-4 sentences.`;
+      const response = await api.post(
+        "/api/ai/enhance-pro-sum",
+        { userContent: prompt },
+        { headers: { Authorization: token } }
+      );
+      setResumeData((prev) => ({
+        ...prev,
+        professional_summary: response.data.enhancedContent,
+      }));
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Failed to generate summary"
+      );
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -17,10 +47,17 @@ const ProfessionalSummaryForm = ({ data, onChange, setResumeData }) => {
           </p>
         </div>
         <button
+          disabled={isGenerating}
+          onClick={generateSummary}
           className="flex items-center gap-2 px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors
 disabled:opacity-50"
         >
-          <Sparkle size={14} /> AI Enhance
+          {isGenerating ? (
+            <Loader2 size={14} className="animate-spin" />
+          ) : (
+            <Sparkle size={14} />
+          )}
+          {isGenerating ? "Enhancing" : "AI Enhance"}
         </button>
       </div>
 
