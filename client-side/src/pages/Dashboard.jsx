@@ -35,6 +35,7 @@ const Dashboard = () => {
   const [hoverIndex, setHoverIndex] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [loadingStage, setLoadingStage] = useState("");
   const { user, token } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
@@ -90,14 +91,18 @@ const Dashboard = () => {
 
     setIsLoading(true);
     try {
+      setLoadingStage("Reading PDF...");
       const resumeText = await pdfToText(resume);
+
+      setLoadingStage("Uploading to server...");
       const { data } = await api.post(
         "/api/ai/upload-resume",
         { title, resumeText },
         { headers: { Authorization: token } }
       );
 
-      // FIX: Add the new resume to your state before navigating
+      setLoadingStage("Finalizing...");
+
       if (data.resume) {
         setAllResumes((prev) => [...prev, data.resume]);
       }
@@ -311,7 +316,7 @@ hover: text-slate-600 cursor-pointer transition-colors"
                   htmlFor="resume-input"
                   className="block text-sm text-slate-700"
                 >
-                  Select resume File
+                  Select Resume File (.pdf only)
                   <div
                     className="flex flex-col items-center justify-center gap-2 border group text-slate-400 
                   border-slate-400 border-dashed rounded-md p-4 py-10 my-4 hover:border-green-500 hover:text-green-700 
