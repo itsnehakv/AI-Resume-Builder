@@ -247,6 +247,7 @@ const ResumeBuilder = () => {
                     }
                     removeBackground={removeBackground}
                     setRemoveBackground={setRemoveBackground}
+                    currentTemplate={resumeData.template}
                   />
                 )}
 

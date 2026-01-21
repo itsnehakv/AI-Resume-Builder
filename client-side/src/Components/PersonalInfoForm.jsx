@@ -15,6 +15,7 @@ export const PersonalInfoForm = ({
   onChange,
   removeBackground,
   setRemoveBackground,
+  currentTemplate,
 }) => {
   const handleChange = (field, value) => {
     onChange({ ...data, [field]: value });
@@ -66,6 +67,8 @@ export const PersonalInfoForm = ({
       icon: Globe,
     },
   ];
+
+  const showImageOption = currentTemplate === "minimal-image"; //& tells which template to show image upload option
   return (
     <div>
       <h3 className="text-lg font-semibold text-gray-900">
@@ -74,64 +77,66 @@ export const PersonalInfoForm = ({
       <p className="text-sm text-gray-600">
         Get started with the personal information!
       </p>
-      <div className="flex items-center gap-2">
-        <label>
-          {data.image ? (
-            <img
-              src={
-                typeof data.image === "string"
-                  ? data.image
-                  : URL.createObjectURL(data.image)
-              }
-              alt="User Image"
-              className="h-24 w-24 rounded-full object-cover mt-5 ring ring-slate-300
-                hover:opacity-80"
-            />
-          ) : (
-            <div className="inline-flex items-center gap-2 mt-5 text-slate-600 hover:text-slate-700 cursor-pointer">
-              <UserIcon className="size-10 p-2.5 border rounded-full" />
-              Upload User Image
-            </div>
-          )}
-          <input
-            type="file"
-            accept="image/jpeg , image/png"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files[0];
-              // * w/o this IF, the alert shows up as "Failed to execute 'createObjectURL' on 'URL': Overload resolution failed."
-              if (file) {
-                handleChange("image", file);
-              }
-            }}
-          />
-        </label>
-        {!data.image && (
-          <p className="text-amber-600 text-[10px] mt-1 italic">
-            * No image selected.
-          </p>
-        )}
-        {data.image && typeof data.image === "object" && (
-          <div className="flex flex-col gap-1 pl-4 text-sm">
-            <p>Remove Background</p>
-            <label
-              className="relative inline-flex items-center cursor-pointer
-                text-gray-900 gap-3"
-            >
-              <input
-                type="checkbox"
-                className="sr-only peer" //& Screen Reader only ; Hides the default checkbox visually but it retains functionality and keeps it accessible.
-                onChange={() => setRemoveBackground((prev) => !prev)}
-                checked={removeBackground}
-              />
-              <div className="w-9 h-5 bg-slate-300 rounded-full peer peer-checked:bg-green-600 transition-colors duration-200"></div>
-              <span className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-4"></span>
-            </label>
-          </div>
-          //& div gives the pill shape, span gives the circle
-        )}
-      </div>
 
+      {showImageOption && (
+        <div className="flex items-center gap-2">
+          <label>
+            {data.image ? (
+              <img
+                src={
+                  typeof data.image === "string"
+                    ? data.image
+                    : URL.createObjectURL(data.image)
+                }
+                alt="User Image"
+                className="h-24 w-24 rounded-full object-cover mt-5 ring ring-slate-300
+                hover:opacity-80"
+              />
+            ) : (
+              <div className="inline-flex items-center gap-2 mt-5 text-slate-600 hover:text-slate-700 cursor-pointer">
+                <UserIcon className="size-10 p-2.5 border rounded-full" />
+                Upload User Image
+              </div>
+            )}
+            <input
+              type="file"
+              accept="image/jpeg , image/png"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                // * w/o this IF, the alert shows up as "Failed to execute 'createObjectURL' on 'URL': Overload resolution failed."
+                if (file) {
+                  handleChange("image", file);
+                }
+              }}
+            />
+          </label>
+          {!data.image && (
+            <p className="text-amber-600 text-[10px] mt-1 italic">
+              * No image selected.
+            </p>
+          )}
+          {data.image && typeof data.image === "object" && (
+            <div className="flex flex-col gap-1 pl-4 text-sm">
+              <p>Remove Background</p>
+              <label
+                className="relative inline-flex items-center cursor-pointer
+                text-gray-900 gap-3"
+              >
+                <input
+                  type="checkbox"
+                  className="sr-only peer" //& Screen Reader only ; Hides the default checkbox visually but it retains functionality and keeps it accessible.
+                  onChange={() => setRemoveBackground((prev) => !prev)}
+                  checked={removeBackground}
+                />
+                <div className="w-9 h-5 bg-slate-300 rounded-full peer peer-checked:bg-green-600 transition-colors duration-200"></div>
+                <span className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-4"></span>
+              </label>
+            </div>
+            //& div gives the pill shape, span gives the circle
+          )}
+        </div>
+      )}
       {fields.map((field) => {
         const Icon = field.icon;
         return (
