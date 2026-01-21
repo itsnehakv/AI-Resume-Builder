@@ -1,7 +1,6 @@
 //^ Controllers for AI
 
 import { parse } from "dotenv";
-// import { response } from "express";
 import Resume from "../models/Resume.js";
 import ai from "../configs/ai.js";
 
@@ -33,7 +32,7 @@ export const enhanceProfessionalSummary = async (req, res) => {
     });
 
     const enhancedContent = response.choices[0].message.content;
-    return response.status(200).json({ enhancedContent });
+    return res.status(200).json({ enhancedContent });
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }
@@ -66,7 +65,7 @@ export const enhanceJobDescription = async (req, res) => {
     });
 
     const enhancedContent = response.choices[0].message.content;
-    return response.status(200).json({ enhancedContent });
+    return res.status(200).json({ enhancedContent });
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }
@@ -154,7 +153,7 @@ export const uploadResume = async (req, res) => {
 
     const extractedData = response.choices[0].message.content;
     const parsedData = JSON.parse(extractedData);
-    const newResume = await Resume.create({ userId, title, ...parsedData }); //Creates new data in database
+    const newResume = await Resume.create({ ...parsedData, userId, title }); //Creates new data in database
     res.json({ resumeId: newResume._id }); // _id auto generated in mongodb
   } catch (error) {
     return res.status(400).json({ message: error.message });
