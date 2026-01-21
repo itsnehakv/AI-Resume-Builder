@@ -9,7 +9,7 @@ import bcrypt from "bcrypt";
 
 import jwt from "jsonwebtoken";
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+  return jwt.sign({ userId: id }, process.env.JWT_SECRET, {
     expiresIn: "30d",
   });
 };
