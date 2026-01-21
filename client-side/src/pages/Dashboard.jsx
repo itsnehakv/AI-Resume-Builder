@@ -82,6 +82,12 @@ const Dashboard = () => {
 
   const uploadResume = async (event) => {
     event.preventDefault();
+
+    if (!resume) {
+      toast.error("Please select a PDF file first.");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const resumeText = await pdfToText(resume);
