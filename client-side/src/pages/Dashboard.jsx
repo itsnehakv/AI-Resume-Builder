@@ -10,7 +10,6 @@ import {
   UploadCloud,
   LoaderCircleIcon,
 } from "lucide-react";
-import { dummyResumeData } from "../assets/assets";
 import { useSelector } from "react-redux";
 import api from "../configs/api";
 import toast from "react-hot-toast";
@@ -341,13 +340,18 @@ hover: text-slate-600 cursor-pointer transition-colors"
                 />
               </div>
               <button
-                className="w-full py-2 bg-purple-600 text-white rounded hover:bg-fuchsia-700 transition-colors flex items-center justify-center gap-2"
+                className={`w-full py-2 bg-purple-600 text-white rounded hover:bg-fuchsia-700 transition-colors flex items-center justify-center gap-2
+                ${
+                  isLoading
+                    ? "bg-purple-400 cursor-not-allowed"
+                    : "bg-purple-600 hover:bg-fuchsia-700"
+                }`}
                 disabled={isLoading}
               >
                 {isLoading && (
                   <LoaderCircleIcon className="animate-spin size-4 text-white " />
                 )}
-                {isLoading ? "Uploading.." : "Upload Resume"}
+                {isLoading ? loadingStage : "Upload Resume"}{" "}
               </button>
               <XIcon
                 className="absolute top-4 right-4 text-slate-400
