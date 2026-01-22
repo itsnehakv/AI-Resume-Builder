@@ -41,7 +41,6 @@ A high-performance, ***full-stack MERN application*** that transforms raw career
 - ***Render***: Hosts the backend server, handling API requests, AI processing, and database connections.
 - ***Environment Management***: Utilizes secure environment variables to manage sensitive API keys for Gemini and ImageKit.
 
----
 ## ✴︎ Debugging Log
 > **Note:** This log was established during the later development phases, so it does not contain every bug from the initial setup and development phase.
 <div align="center"><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSmeuVLJz46P3qMwpxQjtb_tKN4SdyaMOZFwMKaW6ybtZ59gxWvpG_d_-hxmzoXroDA5nCveBjdvLhq/pubhtml" alt="Click here for the live demo"><img src="https://img.shields.io/badge/Debugging_Log_↗-indianred?style=for-the-badge" /></a></div>
