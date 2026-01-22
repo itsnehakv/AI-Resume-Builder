@@ -104,18 +104,9 @@ export const PersonalInfoForm = ({
               className="hidden"
               onChange={(e) => {
                 const file = e.target.files[0];
-                // * w/o this IF, the alert shows up as "Failed to execute 'createObjectURL' on 'URL': Overload resolution failed."
-                if (file) {
-                  handleChange("image", file);
-                }
               }}
             />
           </label>
-          {!data.image && (
-            <p className="text-amber-600 text-[10px] mt-1 italic">
-              * No image selected.
-            </p>
-          )}
           {data.image && typeof data.image === "object" && (
             <div className="flex flex-col gap-1 pl-4 text-sm">
               <p>Remove Background</p>
