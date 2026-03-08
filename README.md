@@ -1,7 +1,7 @@
 # :page_facing_up: | AI Resume Builder 
 A high-performance, ***full-stack MERN application*** that transforms raw career data into recruiter-ready resumes using **Google Gemini AI via an OpenAI-compatible integration**. This project features professional image processing, real-time design synchronization, and a seamless "split-pane" user experience.
 
-<div align="center"><a href="https://ai-resume-builder-sepia-xi.vercel.app" alt="Click here for the live demo"><img src="https://img.shields.io/badge/Visit_The_Live_Application_↗-blueviolet?style=for-the-badge" /></a></div>
+<div align="center"><a href="https://ai-resume-builder-itsnehakv.vercel.app" alt="Click here for the live demo"><img src="https://img.shields.io/badge/Visit_The_Live_Application_↗-blueviolet?style=for-the-badge" /></a></div>
 
 ## ✴︎ Tech Used:
     
