@@ -104,6 +104,9 @@ export const PersonalInfoForm = ({
               className="hidden"
               onChange={(e) => {
                 const file = e.target.files[0];
+                if (file) {
+                  handleChange("image", file);
+                }
               }}
             />
           </label>
